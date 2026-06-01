@@ -76,24 +76,24 @@
     .t-display {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: clamp(40px, 5.2vw, 64px);
-      line-height: 1.04;
+      font-size: clamp(26px, 8vw, 64px);
+      line-height: 1.08;
       letter-spacing: -0.022em;
       color: var(--ink-900);
     }
     .t-h1 {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: clamp(32px, 4vw, 46px);
-      line-height: 1.08;
+      font-size: clamp(22px, 6.5vw, 46px);
+      line-height: 1.12;
       letter-spacing: -0.02em;
       color: var(--ink-900);
     }
     .t-h2 {
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: clamp(26px, 3vw, 34px);
-      line-height: 1.15;
+      font-size: clamp(20px, 5.5vw, 34px);
+      line-height: 1.18;
       letter-spacing: -0.015em;
       color: var(--ink-900);
     }
@@ -474,24 +474,86 @@
     .reveal { opacity: 0; transform: translateY(18px); transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
     .reveal.in { opacity: 1; transform: none; }
 
-    /* RESPONSIVE */
+    /* ── HAMBURGER BUTTON ── */
+    .nav-burger {
+      display: none;
+      align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      padding: 8px; color: var(--ink-900);
+      border-radius: var(--r-sm);
+      transition: background var(--dur) var(--ease);
+      flex-shrink: 0;
+    }
+    .nav-burger:hover { background: rgba(51,98,238,0.08); }
+    .nav-burger svg { width: 22px; height: 22px; }
+
+    /* ── MOBILE SLIDE-DOWN MENU ── */
+    .nav-mobile-menu {
+      margin-top: 10px;
+      background: var(--surface-glass);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+              backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: var(--r-xl);
+      box-shadow: var(--sh-lg);
+      padding: 8px;
+      animation: mobileMenuIn 200ms var(--ease-out) both;
+    }
+    @keyframes mobileMenuIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .nav-mobile-link {
+      display: block;
+      padding: 13px 18px;
+      font-size: 15px; font-weight: 500;
+      color: var(--ink-900);
+      border-radius: var(--r-md);
+      transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+    }
+    .nav-mobile-link:hover { background: rgba(51,98,238,0.07); color: var(--blue-600); }
+    .nav-mobile-link:active { background: rgba(51,98,238,0.12); }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 1080px) {
       .grid-4 { grid-template-columns: repeat(2, 1fr); }
       .grid-5-strip { grid-template-columns: repeat(3, 1fr) !important; }
     }
     @media (max-width: 920px) {
-      .hero-grid, .product-split { grid-template-columns: 1fr; gap: 40px; }
+      .hero-grid, .product-split { grid-template-columns: 1fr; gap: 36px; }
       .grid-3, .steps, .contact-grid { grid-template-columns: 1fr; }
       .statsband { grid-template-columns: 1fr 1fr; gap: 28px; }
       .nav-links { display: none; }
+      .nav-burger { display: flex; }
+      .hero-visual { min-height: 320px; }
+      .trustbar .row { justify-content: center; gap: 16px; }
     }
-    @media (max-width: 560px) {
-      .grid-4, .grid-2 { grid-template-columns: 1fr; }
+    @media (max-width: 640px) {
+      .section-pad { padding: 64px 0; }
+      .wrap { padding: 0 18px; }
       .grid-5-strip { grid-template-columns: 1fr 1fr !important; }
+      .hero { padding: 36px 0 56px; }
+      .hero-visual { min-height: 260px; }
+      .hero-badges { gap: 8px; }
+      .badge { font-size: 11.5px; padding: 6px 11px 6px 9px; }
+      .section-head { margin-bottom: 36px; }
+      .t-lead { font-size: 15px; line-height: 1.55; }
+      .t-body { font-size: 14.5px; }
+      .card-pad { padding: 22px; }
+      .step .num .big { font-size: 30px; }
+      .ctaband { padding: 32px 22px; flex-direction: column; align-items: flex-start; gap: 24px; }
+      .ctaband h2 { font-size: clamp(18px, 5vw, 26px); }
+      .trustbar { margin-top: 44px; }
+      .trustbar .item { font-size: 13px; }
+    }
+    @media (max-width: 420px) {
+      .grid-4, .grid-2 { grid-template-columns: 1fr; }
+      .grid-5-strip { grid-template-columns: 1fr !important; }
       .statsband { grid-template-columns: 1fr; }
-      .section-pad { padding: 72px 0; }
-      .wrap { padding: 0 20px; }
-      .ctaband { padding: 36px 28px; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .section-pad { padding: 52px 0; }
+      .wrap { padding: 0 16px; }
+      .nav-shell { padding: 12px 0; }
     }
   </style>
 </head>
@@ -672,6 +734,7 @@
        NAV
     ══════════════════════════════════════════════════════ */
     function Nav() {
+      const [open, setOpen] = useState(false);
       const links = [
         ["Phoenix Swap", "#phoenix-swap"],
         ["How It Works", "#how-it-works"],
@@ -679,11 +742,12 @@
         ["Company", "#company"],
         ["Contact", "#contact"],
       ];
+      const close = () => setOpen(false);
       return (
         <div className="nav-shell">
           <div className="wrap">
             <nav className="nav">
-              <a className="nav-brand" href="#top">
+              <a className="nav-brand" href="#top" onClick={close}>
                 <img src="Logo/Logo.png" alt="Namix Prime" style={{ height: 34, display: "block" }} />
               </a>
               <div className="nav-links">
@@ -691,7 +755,18 @@
                   <a key={l} className="nav-link" href={h}>{l}</a>
                 ))}
               </div>
+              <button className="nav-burger" onClick={() => setOpen(o => !o)}
+                aria-label="Toggle menu" aria-expanded={open}>
+                <Ic name={open ? "x" : "menu"} size={22} />
+              </button>
             </nav>
+            {open && (
+              <div className="nav-mobile-menu">
+                {links.map(([l,h]) => (
+                  <a key={l} className="nav-mobile-link" href={h} onClick={close}>{l}</a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );
